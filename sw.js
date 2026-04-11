@@ -13,7 +13,7 @@ self.addEventListener('fetch', e => {
   e.respondWith(
     caches.match(e.request).then(cached => cached || fetch(e.request)
       .then(resp => { const c = resp.clone(); caches.open(CACHE).then(ca=>ca.put(e.request,c)); return resp; })
-      .catch(() => caches.match('./index-3.html'))
+      .catch(() => caches.match('./index.html'))
     )
   );
 });
