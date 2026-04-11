@@ -1,5 +1,5 @@
 const CACHE = 'monsouclou-v1';
-const ASSETS = ['./', './index-3.html',
+const ASSETS = ['./', './index.html',
   'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:ital,wght@0,700;0,900;1,700&display=swap'];
 
 self.addEventListener('install', e => {
