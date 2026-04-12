@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f4c81">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mon Souclou">
+<link rel="manifest" href="manifest.json">
+<title>Mon Souclou</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   CONFIG — Modifier ici selon votre école
+   ═══════════════════════════════════════ */
+:root {
+  --PAYS:        "CÔTE D'IVOIRE";
+  --MINISTERE:   "Ministère de l'Éducation Nationale";
+  --INSPECTION:  "INSPECTION DE L'ENSEIGNEMENT PRIMAIRE";
+  --ECOLE:       "[NOM DE L'ÉCOLE]";
+  --VILLE:       "[Ville]";
+  --ANNEE:       "2024-2025";
+
+  /* Couleurs */
+  --navy:   #0f4c81;
+  --blue:   #1d6fb8;
+  --sky:    #e8f4fd;
+  --gold:   #f0a500;
+  --green:  #1a8a4a;
+  --red:    #c0392b;
+  --orange: #d35400;
+  --bg:     #f0f5fb;
+  --card:   #ffffff;
+  --text:   #1a2332;
+  --muted:  #5a6a7e;
+  --border: #d0dae8;
+  --r:      14px;
+  --shadow: 0 2px 16px rgba(15,76,129,.10);
+}
+
+* { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; padding-bottom:68px; }
+
+/* SPLASH */
+#splash { position:fixed; inset:0; background:linear-gradient(160deg,#0f4c81 0%,#1a8a4a 100%);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; transition:opacity .5s; }
+#splash.hide { opacity:0; pointer-events:none; }
+#splash .logo { font-size:4.5rem; animation:bounce 1.2s infinite alternate; }
+@keyframes bounce { from{transform:translateY(0)} to{transform:translateY(-12px)} }
+#splash h1 { font-family:'Fraunces',serif; color:#fff; font-size:1.8rem; margin-top:14px; }
+#splash p  { color:rgba(255,255,255,.65); font-size:.82rem; margin-top:6px; }
+.splash-dots { display:flex; gap:8px; margin-top:32px; }
+.splash-dots span { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.4); animation:dot 1.2s infinite; }
+.splash-dots span:nth-child(2) { animation-delay:.2s; }
+.splash-dots span:nth-child(3) { animation-delay:.4s; }
+@keyframes dot { 0%,80%{background:rgba(255,255,255,.3)} 40%{background:#fff} }
+
+/* HEADER */
+header { background:linear-gradient(135deg,var(--navy),#1a5c9a); color:#fff;
+  padding:12px 16px; position:sticky; top:0; z-index:100; box-shadow:0 2px 12px rgba(0,0,0,.2); }
+.hrow { display:flex; align-items:center; justify-content:space-between; }
+.htitle { font-family:'Fraunces',serif; font-size:1.1rem; }
+.hsub   { font-size:.68rem; opacity:.65; margin-top:1px; }
+.hbadges { display:flex; gap:6px; align-items:center; flex-shrink:0; }
+.badge  { padding:3px 10px; border-radius:20px; font-size:.68rem; font-weight:600; cursor:pointer; }
+.badge-gold  { background:var(--gold); color:#fff; }
+.badge-ghost { background:rgba(255,255,255,.15); color:#fff; }
+
+/* BOTTOM NAV */
+.bnav { position:fixed; bottom:0; left:0; right:0; background:#fff;
+  border-top:1px solid var(--border); display:flex; z-index:100; box-shadow:0 -2px 12px rgba(0,0,0,.07); }
+.bni { flex:1; display:flex; flex-direction:column; align-items:center;
+  padding:7px 2px 9px; cursor:pointer; position:relative; }
+.bni .ic { font-size:1.25rem; transition:transform .15s; }
+.bni .lb { font-size:.59rem; font-weight:600; color:var(--muted); margin-top:1px; }
+.bni.active .lb { color:var(--navy); }
+.bni.active::before { content:''; position:absolute; top:0; left:15%; right:15%;
+  height:3px; background:var(--navy); border-radius:0 0 3px 3px; }
+.bni.active .ic { transform:scale(1.12); }
+
+/* PAGES */
+.page { display:none; padding:14px; animation:fi .2s ease; }
+.page.active { display:block; }
+@keyframes fi { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:none} }
+
+/* CARDS */
+.card { background:var(--card); border-radius:var(--r); box-shadow:var(--shadow); padding:15px; margin-bottom:12px; }
+.ctitle { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin-bottom:11px; }
+
+/* FIELDS */
+.field { margin-bottom:10px; }
+.field label { display:block; font-size:.74rem; font-weight:600; color:var(--navy); margin-bottom:4px; }
+.field input,.field select,.field textarea {
+  width:100%; padding:10px 12px; border:1.5px solid var(--border); border-radius:10px;
+  font-family:'DM Sans',sans-serif; font-size:.88rem; background:#f7faff; color:var(--text);
+  transition:border-color .18s; -webkit-appearance:none; }
+.field input:focus,.field select:focus { outline:none; border-color:var(--navy); background:#fff; }
+.frow { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+.f3   { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+
+/* SEARCH */
+.sbar { position:relative; margin-bottom:12px; }
+.sbar input { width:100%; padding:11px 14px 11px 40px; border:1.5px solid var(--border);
+  border-radius:12px; font-family:'DM Sans',sans-serif; font-size:.9rem; background:#fff; }
+.sbar input:focus { outline:none; border-color:var(--navy); }
+.sbar::before { content:'🔍'; position:absolute; left:13px; top:50%; transform:translateY(-50%); font-size:.9rem; }
+
+/* BUTTONS */
+.btn { display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  padding:11px 15px; border-radius:11px; border:none;
+  font-family:'DM Sans',sans-serif; font-weight:700; font-size:.86rem;
+  cursor:pointer; transition:all .14s; width:100%; margin-bottom:8px; }
+.btn:active { transform:scale(.96); opacity:.9; }
+.btn-navy   { background:var(--navy);   color:#fff; }
+.btn-blue   { background:var(--blue);   color:#fff; }
+.btn-green  { background:var(--green);  color:#fff; }
+.btn-red    { background:var(--red);    color:#fff; }
+.btn-gold   { background:var(--gold);   color:#fff; }
+.btn-orange { background:var(--orange); color:#fff; }
+.btn-ghost  { background:#f0f5fb; color:var(--navy); border:1.5px solid var(--border); }
+.btn-sm { padding:8px 12px; font-size:.78rem; border-radius:8px; margin-bottom:0; }
+.g2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px; }
+.g3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-bottom:8px; }
+.g4 { display:grid; grid-template-columns:repeat(4,1fr); gap:5px; margin-bottom:8px; }
+
+/* STUDENT CARDS */
+.sc { background:var(--card); border-radius:var(--r); box-shadow:var(--shadow);
+  padding:12px 14px; margin-bottom:9px; display:flex; align-items:center; gap:11px;
+  cursor:pointer; border-left:4px solid var(--blue); transition:all .14s; }
+.sc:active { transform:scale(.98); }
+.sc.female { border-left-color:var(--orange); }
+.av { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:.9rem; flex-shrink:0; color:#fff; overflow:hidden; }
+.av img { width:100%; height:100%; object-fit:cover; }
+.si { flex:1; min-width:0; }
+.sn { font-weight:700; font-size:.9rem; }
+.sm { font-size:.7rem; color:var(--muted); margin-top:2px; }
+.stag { font-size:.64rem; font-weight:600; padding:2px 8px; border-radius:20px; flex-shrink:0; }
+.m-tag { background:#e8f4fd; color:var(--blue); }
+.f-tag { background:#fff0e6; color:var(--orange); }
+
+/* CLASSE PILLS */
+.classe-filter { display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; margin-bottom:12px; }
+.classe-filter::-webkit-scrollbar { display:none; }
+.cpill { padding:6px 13px; border-radius:20px; border:1.5px solid var(--border);
+  font-size:.74rem; font-weight:600; cursor:pointer; white-space:nowrap;
+  background:#fff; color:var(--muted); transition:all .14s; flex-shrink:0; }
+.cpill.active { background:var(--navy); color:#fff; border-color:var(--navy); }
+
+/* NOTES TABLE */
+.ntable { width:100%; border-collapse:collapse; font-size:.8rem; }
+.ntable thead tr { background:var(--navy); color:#fff; }
+.ntable th { padding:8px 6px; text-align:center; font-weight:600; font-size:.72rem; }
+.ntable td { padding:7px 5px; text-align:center; border-bottom:1px solid var(--border); }
+.ntable tr:nth-child(even) td { background:#f7faff; }
+.ntable td.mat { text-align:left; font-weight:600; padding-left:8px; font-size:.76rem; }
+.nl { color:var(--red); font-weight:700; }
+.nh { color:var(--green); font-weight:700; }
+
+/* COMPOSITION SELECTOR */
+.comp-tabs { display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; margin-bottom:12px; }
+.comp-tabs::-webkit-scrollbar { display:none; }
+.ctab { padding:8px 14px; border-radius:20px; border:1.5px solid var(--border);
+  font-size:.76rem; font-weight:700; cursor:pointer; white-space:nowrap;
+  background:#fff; color:var(--muted); flex-shrink:0; transition:all .14s; }
+.ctab.active { background:var(--navy); color:#fff; border-color:var(--navy); }
+
+/* STATS */
+.sgrid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:13px; }
+.scard { background:var(--card); border-radius:var(--r); box-shadow:var(--shadow); padding:15px; text-align:center; }
+.sv { font-size:1.7rem; font-weight:700; }
+.sl { font-size:.68rem; color:var(--muted); margin-top:2px; font-weight:600; }
+
+/* BULLETIN PRINT STYLES */
+.bul-wrap { background:#fff; border-radius:var(--r); overflow:hidden; box-shadow:var(--shadow); margin-bottom:12px; }
+.bul-top { background:var(--navy); color:#fff; padding:14px 16px; text-align:center; }
+.bul-top .pays { font-size:.68rem; opacity:.7; letter-spacing:.5px; text-transform:uppercase; }
+.bul-top .school { font-family:'Fraunces',serif; font-size:1rem; margin:4px 0 2px; }
+.bul-top .inspect { font-size:.7rem; opacity:.75; }
+.bul-type { background:var(--gold); color:#fff; text-align:center;
+  font-weight:700; font-size:.82rem; padding:6px; }
+.bul-info { display:grid; grid-template-columns:1fr 1fr; gap:0; border-bottom:1px solid var(--border); }
+.bul-info-cell { padding:7px 10px; border-right:1px solid var(--border); }
+.bul-info-cell:nth-child(even) { border-right:none; }
+.bul-lbl { font-size:.62rem; font-weight:600; color:var(--muted); text-transform:uppercase; }
+.bul-val { font-weight:700; font-size:.84rem; color:var(--navy); }
+.bul-table { width:100%; border-collapse:collapse; font-size:.76rem; }
+.bul-table thead tr { background:var(--navy); color:#fff; }
+.bul-table th { padding:7px 5px; text-align:center; font-size:.68rem; font-weight:600; }
+.bul-table th.left { text-align:left; padding-left:10px; }
+.bul-table td { padding:6px 5px; text-align:center; border-bottom:1px solid #eef2f8; }
+.bul-table tr:nth-child(even) td { background:#f7faff; }
+.bul-table td.mname { text-align:left; padding-left:10px; font-weight:600; }
+.bul-moy { display:grid; grid-template-columns:1fr 1fr 1fr; background:var(--navy); color:#fff; padding:12px; text-align:center; }
+.bul-moy .val { font-size:1.3rem; font-weight:700; }
+.bul-moy .lbl { font-size:.6rem; opacity:.65; }
+.mention { display:inline-block; padding:2px 10px; border-radius:20px; font-weight:700; font-size:.7rem; }
+.bul-sign { display:grid; grid-template-columns:1fr 1fr; gap:0; padding:12px 14px; font-size:.74rem; gap:10px; }
+.sign-box { border:1px solid var(--border); border-radius:8px; padding:8px; }
+.sign-lbl { font-weight:600; font-size:.7rem; margin-bottom:20px; color:var(--navy); }
+
+/* MODAL */
+.ov { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:200; align-items:flex-end; justify-content:center; }
+.ov.open { display:flex; }
+.modal { background:#fff; border-radius:22px 22px 0 0; padding:20px 18px; width:100%;
+  max-height:90vh; overflow-y:auto; animation:su .22s ease; }
+@keyframes su { from{transform:translateY(30px);opacity:0} to{transform:none;opacity:1} }
+.mhandle { width:36px; height:4px; background:var(--border); border-radius:4px; margin:0 auto 18px; }
+.mtitle { font-family:'Fraunces',serif; font-size:1.1rem; margin-bottom:14px; }
+
+/* PHOTO */
+.photo-wrap { width:80px; height:80px; border-radius:50%; overflow:hidden; background:#e0e8f0;
+  display:flex; align-items:center; justify-content:center; margin:0 auto 10px;
+  border:3px solid var(--border); cursor:pointer; position:relative; }
+.photo-wrap img { width:100%; height:100%; object-fit:cover; }
+.photo-edit { position:absolute; bottom:0; right:0; background:var(--navy); color:#fff;
+  border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; font-size:.7rem; }
+
+/* TOAST */
+.toast { position:fixed; bottom:78px; left:50%; transform:translateX(-50%) translateY(16px);
+  background:var(--navy); color:#fff; padding:10px 20px; border-radius:24px;
+  font-size:.82rem; font-weight:600; opacity:0; transition:all .25s; z-index:999;
+  white-space:nowrap; box-shadow:0 6px 20px rgba(0,0,0,.2); max-width:88vw; text-align:center; }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* EMPTY */
+.empty { text-align:center; padding:40px 16px; color:var(--muted); }
+.ei { font-size:3rem; margin-bottom:10px; }
+.et { font-weight:700; color:var(--text); margin-bottom:4px; }
+.ep { font-size:.82rem; }
+
+/* RANK */
+.ri { display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); }
+.rn { width:26px; height:26px; border-radius:50%; display:flex; align-items:center;
+  justify-content:center; font-weight:700; font-size:.75rem; flex-shrink:0; }
+
+@media print {
+  header,.bnav,.no-print,#page-eleves,#page-ajouter,#page-notes,#page-stats { display:none!important; }
+  #page-bulletin { display:block!important; padding:0; }
+  body { padding:0; background:#fff; }
+  .bul-wrap { box-shadow:none; border:1px solid #ccc; }
+  .bul-top,.bul-moy { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .bul-type { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .btn { display:none!important; }
+  .no-print { display:none!important; }
+}
+@media(max-width:360px) { .frow,.f3,.g2,.g3,.g4 { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="logo">🏫</div>
+  <h1>Mon Souclou</h1>
+  <p>Gestion Scolaire Primaire</p>
+  <div class="splash-dots"><span></span><span></span><span></span></div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="hrow">
+    <div>
+      <div class="htitle">🏫 Mon Souclou</div>
+      <div class="hsub" id="hSub">Chargement...</div>
+    </div>
+    <div class="hbadges">
+      <span class="badge badge-ghost" onclick="showYearModal()" id="yearBadge">2024-2025</span>
+      <span class="badge badge-gold" id="countBadge">0</span>
+    </div>
+  </div>
+</header>
+
+<!-- PAGE ÉLÈVES -->
+<div class="page active" id="page-eleves">
+  <div class="sbar"><input type="text" id="searchIn" placeholder="Rechercher un élève..." oninput="filterEl()"></div>
+  <div class="classe-filter" id="classeFilter"></div>
+  <div id="listeEl"></div>
+</div>
+
+<!-- PAGE AJOUTER -->
+<div class="page" id="page-ajouter">
+  <div class="card">
+    <div class="ctitle" id="formTitle">Nouvel Élève</div>
+    <input type="hidden" id="eid">
+
+    <!-- Photo -->
+    <div style="text-align:center;margin-bottom:14px">
+      <div class="photo-wrap" onclick="triggerPhoto()">
+        <img id="photoPreview" src="" style="display:none">
+        <span id="photoIcon" style="font-size:2rem">👤</span>
+        <div class="photo-edit">✏️</div>
+      </div>
+      <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="loadPhoto(event)">
+      <div style="font-size:.7rem;color:var(--muted)">Appuyez pour ajouter une photo</div>
+    </div>
+
+    <div class="frow">
+      <div class="field"><label>Matricule *</label><input type="text" id="fMat" placeholder="2024001"></div>
+      <div class="field">
+        <label>Classe *</label>
+        <select id="fClasse">
+          <option value="CP1">CP1</option>
+          <option value="CP2">CP2</option>
+          <option value="CE1">CE1</option>
+          <option value="CE2">CE2</option>
+          <option value="CM1">CM1</option>
+          <option value="CM2">CM2</option>
+        </select>
+      </div>
+    </div>
+    <div class="frow">
+      <div class="field"><label>Nom *</label><input type="text" id="fNom" placeholder="N'GUESSAN"></div>
+      <div class="field"><label>Prénoms *</label><input type="text" id="fPrenom" placeholder="Koffi Fulgence"></div>
+    </div>
+    <div class="frow">
+      <div class="field">
+        <label>Sexe</label>
+        <select id="fSexe"><option value="M">Masculin</option><option value="F">Féminin</option></select>
+      </div>
+      <div class="field"><label>Date de Naissance</label><input type="date" id="fDob"></div>
+    </div>
+    <div class="field"><label>Lieu de Naissance</label><input type="text" id="fLieu" placeholder="Abidjan"></div>
+    <div class="field"><label>Parent / Tuteur</label><input type="text" id="fParent" placeholder="Nom du tuteur"></div>
+    <div class="field"><label>Téléphone</label><input type="tel" id="fTel" placeholder="+225 07 00 00 00 00"></div>
+  </div>
+  <button class="btn btn-green" onclick="saveEleve()">💾  Enregistrer l'élève</button>
+  <button class="btn btn-ghost" onclick="resetForm()">🗑️  Vider le formulaire</button>
+</div>
+
+<!-- PAGE NOTES -->
+<div class="page" id="page-notes">
+  <div class="card">
+    <div class="ctitle">Sélection</div>
+    <div class="field">
+      <label>Élève</label>
+      <select id="noteEl" onchange="renderNotes()" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.88rem;background:#f7faff">
+        <option value="">-- Choisir un élève --</option>
+      </select>
+    </div>
+    <div class="comp-tabs" id="compTabs">
+      <div class="ctab active" onclick="setComp(1)">Compo. 1</div>
+      <div class="ctab" onclick="setComp(2)">Compo. 2</div>
+      <div class="ctab" onclick="setComp(3)">Compo. 3</div>
+      <div class="ctab" onclick="setComp(4)" style="background:#fff0e6;color:#d35400;border-color:#d35400">🎓 Comp. Passage</div>
+    </div>
+  </div>
+  <div id="notesContent"></div>
+</div>
+
+<!-- PAGE BULLETIN -->
+<div class="page" id="page-bulletin">
+  <div class="card no-print">
+    <div class="ctitle">Générer le Bulletin</div>
+    <div class="field">
+      <label>Élève</label>
+      <select id="bulEl" onchange="renderBulletin()" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.88rem;background:#f7faff">
+        <option value="">-- Choisir un élève --</option>
+      </select>
+    </div>
+    <div class="comp-tabs no-print">
+      <div class="ctab active" onclick="setBulComp(1)">Compo. 1</div>
+      <div class="ctab" onclick="setBulComp(2)">Compo. 2</div>
+      <div class="ctab" onclick="setBulComp(3)">Compo. 3</div>
+      <div class="ctab" onclick="setBulComp(4)" style="background:#fff0e6;color:#d35400;border-color:#d35400">🎓 Comp. Passage</div>
+    </div>
+    <button class="btn btn-navy no-print" onclick="window.print()">🖨️  Imprimer / PDF</button>
+  </div>
+  <div id="bulContent"></div>
+</div>
+
+<!-- PAGE STATS -->
+<div class="page" id="page-stats">
+  <div class="sgrid">
+    <div class="scard"><div class="sv" id="stTotal" style="color:var(--blue)">0</div><div class="sl">Total Élèves</div></div>
+    <div class="scard"><div class="sv" id="stGarc"  style="color:var(--navy)">0</div><div class="sl">Garçons</div></div>
+    <div class="scard"><div class="sv" id="stFill"  style="color:var(--orange)">0</div><div class="sl">Filles</div></div>
+    <div class="scard"><div class="sv" id="stMoy"   style="color:var(--green)">—</div><div class="sl">Moy. Compo.1</div></div>
+  </div>
+  <div class="card">
+    <div class="ctitle">🏆 Classement — 1ère Composition</div>
+    <div id="classement"></div>
+  </div>
+  <div class="card">
+    <div class="ctitle">⚙️ Paramètres École</div>
+    <div class="field"><label>Nom de l'École</label><input type="text" id="setEcole" placeholder="École Primaire Publique..."></div>
+    <div class="field"><label>Inspection</label><input type="text" id="setInspect" placeholder="IEP de..."></div>
+    <div class="field"><label>Ville</label><input type="text" id="setVille" placeholder="Abidjan"></div>
+    <div class="field"><label>Pays</label><input type="text" id="setPays" placeholder="CÔTE D'IVOIRE"></div>
+    <button class="btn btn-navy" onclick="saveConfig()">💾  Sauvegarder la configuration</button>
+  </div>
+  <div class="card">
+    <div class="ctitle">💾 Données</div>
+    <button class="btn btn-blue" onclick="exportData()">📤  Exporter (sauvegarde)</button>
+    <button class="btn btn-ghost" onclick="document.getElementById('importFile').click()">📥  Importer des données</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+    <button class="btn btn-red" onclick="clearAll()">🗑️  Effacer toutes les données</button>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bnav">
+  <div class="bni active" onclick="goPage('eleves',0)"><span class="ic">👥</span><span class="lb">Élèves</span></div>
+  <div class="bni" onclick="goPage('ajouter',1)"><span class="ic">➕</span><span class="lb">Ajouter</span></div>
+  <div class="bni" onclick="goPage('notes',2)"><span class="ic">📝</span><span class="lb">Notes</span></div>
+  <div class="bni" onclick="goPage('bulletin',3)"><span class="ic">📋</span><span class="lb">Bulletin</span></div>
+  <div class="bni" onclick="goPage('stats',4)"><span class="ic">📊</span><span class="lb">Stats</span></div>
+</nav>
+
+<!-- MODAL ELEVE -->
+<div class="ov" id="ovEleve">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle" id="ovTitle"></div>
+    <div id="ovContent"></div>
+    <div class="g2" style="margin-top:10px">
+      <button class="btn btn-blue btn-sm" onclick="editEleve()">✏️ Modifier</button>
+      <button class="btn btn-red btn-sm" onclick="askDelete()">🗑️ Supprimer</button>
+    </div>
+    <button class="btn btn-green btn-sm" onclick="goNotes()">📝 Saisir notes</button>
+    <button class="btn btn-navy btn-sm" onclick="goBulletin()">📋 Voir bulletin</button>
+    <button class="btn btn-ghost btn-sm" onclick="closeOv('ovEleve')">Fermer</button>
+  </div>
+</div>
+
+<!-- MODAL DELETE -->
+<div class="ov" id="ovDel">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle">⚠️ Supprimer cet élève ?</div>
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:16px" id="delMsg"></p>
+    <button class="btn btn-red" onclick="confirmDelete()">Oui, supprimer définitivement</button>
+    <button class="btn btn-ghost" onclick="closeOv('ovDel')">Annuler</button>
+  </div>
+</div>
+
+<!-- MODAL ANNÉE -->
+<div class="ov" id="ovYear">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle">📅 Année Scolaire</div>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:14px">Chaque année = base de données séparée sur votre téléphone.</p>
+    <div id="yearList"></div>
+    <button class="btn btn-green" onclick="newYear()">➕ Nouvelle année</button>
+    <button class="btn btn-ghost" onclick="closeOv('ovYear')">Fermer</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+// ═══════════════════════════════════════════════════════════
+//  CONFIGURATION DES MATIÈRES PAR CLASSE ET COMPOSITION
+// ═══════════════════════════════════════════════════════════
+
+// CP1 Composition 1 : Math + Français (Graphisme, Discrimination visuelle, Discrimination auditive, Lecture, Dessin, Poésie/chant) + AEC(dessin/Lecture/poésie) + EDHC
+// CP1 C2 & C3 + CP2 : Math + Français (Ecriture, Copie, Dictée, Expression Écrite, Lecture, Dessin, Poésie) + AEC + EDHC
+// CE1→CM2 : Expl.Texte + Eveil au Milieu + Dictée + Math → Total/8.5
+
+const CONFIGS = {
+  CP1: {
+    c1: {
+      diviseur: 8,
+      label: '1ère Composition',
+      groupes: [
+        { nom: 'MATHÉMATIQUES', matieres: [{ nom: 'Mathématiques', max: 10 }] },
+        { nom: 'FRANÇAIS', matieres: [
+          { nom: 'Graphisme', max: 10 },
+          { nom: 'Discrimination visuelle', max: 10 },
+          { nom: 'Discrimination auditive', max: 10 },
+          { nom: 'Lecture', max: 10 },
+          { nom: 'Dessin', max: 10 },
+          { nom: 'Poésie / Chant', max: 10 },
+        ]},
+        { nom: 'AEC', matieres: [{ nom: 'EDHC', max: 10 }] },
+      ]
+    },
+    c2: {
+      diviseur: 9,
+      label: '2ème Composition',
+      groupes: [
+        { nom: 'MATHÉMATIQUES', matieres: [{ nom: 'Mathématiques', max: 10 }] },
+        { nom: 'FRANÇAIS', matieres: [
+          { nom: 'Écriture', max: 10 },
+          { nom: 'Copie', max: 10 },
+          { nom: 'Dictée', max: 10 },
+          { nom: 'Expression Écrite', max: 10 },
+          { nom: 'Lecture', max: 10 },
+          { nom: 'Dessin', max: 10 },
+          { nom: 'Poésie / Chant', max: 10 },
+        ]},
+        { nom: 'AEC', matieres: [{ nom: 'EDHC', max: 10 }] },
+      ]
+    },
+    c3: {
+      diviseur: 9,
+      label: '3ème Composition',
+      groupes: [
+        { nom: 'MATHÉMATIQUES', matieres: [{ nom: 'Mathématiques', max: 10 }] },
+        { nom: 'FRANÇAIS', matieres: [
+          { nom: 'Écriture', max: 10 },
+          { nom: 'Copie', max: 10 },
+          { nom: 'Dictée', max: 10 },
+          { nom: 'Expression Écrite', max: 10 },
+          { nom: 'Lecture', max: 10 },
+          { nom: 'Dessin', max: 10 },
+          { nom: 'Poésie / Chant', max: 10 },
+        ]},
+        { nom: 'AEC', matieres: [{ nom: 'EDHC', max: 10 }] },
+      ]
+    },
+    c4: {
+      diviseur: 9,
+      label: 'Composition de Passage',
+      isPassage: true,
+      groupes: [
+        { nom: 'MATHÉMATIQUES', matieres: [{ nom: 'Mathématiques', max: 10 }] },
+        { nom: 'FRANÇAIS', matieres: [
+          { nom: 'Écriture', max: 10 },
+          { nom: 'Copie', max: 10 },
+          { nom: 'Dictée', max: 10 },
+          { nom: 'Expression Écrite', max: 10 },
+          { nom: 'Lecture', max: 10 },
+          { nom: 'Dessin', max: 10 },
+          { nom: 'Poésie / Chant', max: 10 },
+        ]},
+        { nom: 'AEC', matieres: [{ nom: 'EDHC', max: 10 }] },
+      ]
+    }
+  },
+  CP2: {
+    c1: { diviseur: 9, label: '1ère Composition', groupes: [
+      { nom: 'MATHÉMATIQUES', matieres: [{ nom: 'Mathématiques', max: 10 }] },
+      { nom: 'FRANÇAIS', matieres: [
+        { nom: 'Écriture', max: 10 }, { nom: 'Copie', max: 10 },
+        { nom: 'Dictée', max: 10 }, { nom: 'Expression Écrite', max: 10 },
+        { nom: 'Lecture', max: 10 }, { nom: 'Dessin', max: 10 },
+        { nom: 'Poésie / Chant', max: 10 },
+      ]},
+      { nom: 'AEC', matieres: [{ nom: 'EDHC', max: 10 }] },
+    ]},
+    c2: { diviseur: 9, label: '2ème Composition', groupes: [
+      { nom: 'MATHÉMATIQUES', matieres: [{ nom: 'Mathématiques', max: 10 }] },
+      { nom: 'FRANÇAIS', matieres: [
+        { nom: 'Écriture', max: 10 }, { nom: 'Copie', max: 10 },
+        { nom: 'Dictée', max: 10 }, { nom: 'Expression Écrite', max: 10 },
+        { nom: 'Lecture', max: 10 }, { nom: 'Dessin', max: 10 },
+        { nom: 'Poésie / Chant', max: 10 },
+      ]},
+      { nom: 'AEC', matieres: [{ nom: 'EDHC', max: 10 }] },
+    ]},
+    c3: { diviseur: 9, label: '3ème Composition', groupes: [
+      { nom: 'MATHÉMATIQUES', matieres: [{ nom: 'Mathématiques', max: 10 }] },
+      { nom: 'FRANÇAIS', matieres: [
+        { nom: 'Écriture', max: 10 }, { nom: 'Copie', max: 10 },
+        { nom: 'Dictée', max: 10 }, { nom: 'Expression Écrite', max: 10 },
+        { nom: 'Lecture', max: 10 }, { nom: 'Dessin', max: 10 },
+        { nom: 'Poésie / Chant', max: 10 },
+      ]},
+      { nom: 'AEC', matieres: [{ nom: 'EDHC', max: 10 }] },
+    ]},
+    c4: { diviseur: 9, label: 'Composition de Passage', isPassage: true, groupes: [
+      { nom: 'MATHÉMATIQUES', matieres: [{ nom: 'Mathématiques', max: 10 }] },
+      { nom: 'FRANÇAIS', matieres: [
+        { nom: 'Écriture', max: 10 }, { nom: 'Copie', max: 10 },
+        { nom: 'Dictée', max: 10 }, { nom: 'Expression Écrite', max: 10 },
+        { nom: 'Lecture', max: 10 }, { nom: 'Dessin', max: 10 },
+        { nom: 'Poésie / Chant', max: 10 },
+      ]},
+      { nom: 'AEC', matieres: [{ nom: 'EDHC', max: 10 }] },
+    ]}
+  }
+};
+// CE1, CE2, CM1, CM2 identiques
+['CE1','CE2','CM1','CM2'].forEach(cl => {
+  CONFIGS[cl] = {};
+  ['c1','c2','c3','c4'].forEach((c,i) => {
+    CONFIGS[cl][c] = {
+      diviseur: 8.5,
+      label: i===3 ? 'Composition de Passage' : `${i+1}${i===0?'ère':'ème'} Composition`,
+      isPassage: i===3,
+      groupes: [
+        { nom: 'FRANÇAIS', matieres: [{ nom: 'Expl. de Texte', max: 50 }] },
+        { nom: 'EVEIL AU MILIEU', matieres: [{ nom: 'Éveil au Milieu', max: 50 }] },
+        { nom: 'DICTÉE', matieres: [{ nom: 'Dictée', max: 20 }] },
+        { nom: 'MATHÉMATIQUES', matieres: [{ nom: 'Mathématiques', max: 50 }] },
+      ]
+    };
+  });
+});
+
+// ═══════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════
+let annee    = localStorage.getItem('annee') || '2024-2025';
+let eleves   = [];
+let notes    = {};
+let config   = {};
+let compActif  = 1;
+let bulCompActif = 1;
+let eleveSelId   = null;
+let eleveDelId   = null;
+let filtreClasse = 'Tous';
+
+function kEl() { return `el_${annee}`; }
+function kNo() { return `no_${annee}`; }
+function kCf() { return `cfg`; }
+
+function loadData() {
+  eleves = JSON.parse(localStorage.getItem(kEl()) || '[]');
+  notes  = JSON.parse(localStorage.getItem(kNo()) || '{}');
+  config = JSON.parse(localStorage.getItem(kCf()) || '{}');
+  if(!config.ecole)   config.ecole   = '';
+  if(!config.inspect) config.inspect = '';
+  if(!config.ville)   config.ville   = '';
+  if(!config.pays)    config.pays    = "CÔTE D'IVOIRE";
+  // Données démo
+  if(eleves.length === 0) {
+    eleves = [
+      {id:'2024001',nom:"N'GUESSAN KOFFI",prenom:'FULGENCE',sexe:'M',dob:'2017-03-10',lieu:"Abidjan",classe:'CP1',parent:'N\'Guessan Koffi Sr',tel:'+225 07 11 22 33',photo:''},
+      {id:'2024002',nom:'YAO AMOIN',prenom:'RITA',sexe:'F',dob:'2017-05-22',lieu:'Divo',classe:'CP1',parent:'Yao Amoin Sr',tel:'+225 07 22 33 44',photo:''},
+      {id:'2024003',nom:'N\'GUESSAN KOFFI',prenom:'FULGENCE',sexe:'M',dob:'2015-01-14',lieu:'Abidjan',classe:'CE1',parent:'Tuteur CE1',tel:'+225 07 33 44 55',photo:''},
+      {id:'2024004',nom:'KOUASSI KOUASSI',prenom:'ELIZE',sexe:'F',dob:'2015-06-30',lieu:'Yamoussoukro',classe:'CE2',parent:'Kouassi Sr',tel:'+225 07 44 55 66',photo:''},
+    ];
+    notes = {
+      '2024001': { c1: [10, 8, 10, 10, 9, 8, 9, 6] },
+      '2024002': { c1: [10, 8, 10, 10, 8, 9, 8, 6] },
+      '2024003': { c1: [42, 38, 16, 45] },
+      '2024004': { c1: [40, 35, 18, 48] },
+    };
+    saveData();
+  }
+}
+
+function saveData() {
+  localStorage.setItem(kEl(), JSON.stringify(eleves));
+  localStorage.setItem(kNo(), JSON.stringify(notes));
+  localStorage.setItem(kCf(), JSON.stringify(config));
+}
+
+// ═══════════════════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════════════════
+function goPage(id, idx) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.bni').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.bni')[idx].classList.add('active');
+  if(id === 'eleves')  renderEleves();
+  if(id === 'notes')   { updateSelects(); renderNotes(); }
+  if(id === 'bulletin'){ updateSelects(); renderBulletin(); }
+  if(id === 'stats')   renderStats();
+  if(id === 'ajouter') loadConfig();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  ÉLÈVES
+// ═══════════════════════════════════════════════════════════
+const COLORS = ['#1d6fb8','#1a8a4a','#c0392b','#d35400','#7b2d8b','#0a7c8c','#b06c1a'];
+function col(i) { return COLORS[i % COLORS.length]; }
+
+function renderClasFilter() {
+  const classes = ['Tous', 'CP1', 'CP2', 'CE1', 'CE2', 'CM1', 'CM2'];
+  document.getElementById('classeFilter').innerHTML = classes.map(c =>
+    `<div class="cpill ${filtreClasse===c?'active':''}" onclick="setClassFilter('${c}')">${c}</div>`
+  ).join('');
+}
+
+function setClassFilter(c) {
+  filtreClasse = c;
+  renderClasFilter();
+  renderEleves();
+}
+
+function renderEleves(f = '') {
+  const src = f ? f : document.getElementById('searchIn').value.toLowerCase();
+  let list = filtreClasse === 'Tous' ? eleves : eleves.filter(e => e.classe === filtreClasse);
+  if(src) list = list.filter(e =>
+    e.nom.toLowerCase().includes(src) ||
+    e.prenom.toLowerCase().includes(src) ||
+    e.id.toLowerCase().includes(src)
+  );
+  document.getElementById('countBadge').textContent = eleves.length;
+  document.getElementById('hSub').textContent = `${eleves.length} élève${eleves.length>1?'s':''} — ${annee}`;
+  const el = document.getElementById('listeEl');
+  if(!list.length) {
+    el.innerHTML = `<div class="empty"><div class="ei">👥</div><div class="et">${src||filtreClasse!=='Tous'?'Aucun résultat':'Aucun élève'}</div><div class="ep">Appuyez sur ➕ pour ajouter</div></div>`;
+    return;
+  }
+  el.innerHTML = list.map(e => {
+    const gi = eleves.indexOf(e);
+    const hasPhoto = e.photo && e.photo.length > 0;
+    return `<div class="sc ${e.sexe==='F'?'female':''}" onclick="openEleve('${e.id}')">
+      <div class="av" style="background:${hasPhoto?'transparent':col(gi)}">
+        ${hasPhoto ? `<img src="${e.photo}" alt="">` : `${e.prenom[0]}${e.nom[0]}`}
+      </div>
+      <div class="si">
+        <div class="sn">${e.nom} ${e.prenom}</div>
+        <div class="sm">📚 ${e.classe} &nbsp;·&nbsp; 🪪 ${e.id}</div>
+        <div class="sm">👤 ${e.parent||'—'}</div>
+      </div>
+      <span class="stag ${e.sexe==='F'?'f-tag':'m-tag'}">${e.sexe==='F'?'♀ Fille':'♂ Garçon'}</span>
+    </div>`;
+  }).join('');
+}
+
+function filterEl() { renderEleves(document.getElementById('searchIn').value.toLowerCase()); }
+
+function openEleve(id) {
+  const e = eleves.find(x => x.id === id);
+  if(!e) return;
+  eleveSelId = id;
+  const gi = eleves.indexOf(e);
+  const hasPhoto = e.photo && e.photo.length > 0;
+  const dob = e.dob ? new Date(e.dob).toLocaleDateString('fr-FR') : '—';
+  const moy = getMoyenne(id, 'c1');
+  document.getElementById('ovTitle').innerHTML =
+    `<span style="color:${col(gi)}">${e.prenom} ${e.nom}</span>`;
+  document.getElementById('ovContent').innerHTML = `
+    <div style="text-align:center;margin-bottom:12px">
+      <div class="photo-wrap" style="cursor:default;margin:0 auto 6px">
+        ${hasPhoto ? `<img src="${e.photo}">` : `<span style="font-size:2rem">👤</span>`}
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:.82rem">
+      <div style="background:#f7faff;border-radius:8px;padding:8px">
+        <div style="font-size:.64rem;color:var(--muted);font-weight:600">CLASSE</div>
+        <div style="font-weight:700">${e.classe}</div>
+      </div>
+      <div style="background:#f7faff;border-radius:8px;padding:8px">
+        <div style="font-size:.64rem;color:var(--muted);font-weight:600">MATRICULE</div>
+        <div style="font-weight:700">${e.id}</div>
+      </div>
+      <div style="background:#f7faff;border-radius:8px;padding:8px">
+        <div style="font-size:.64rem;color:var(--muted);font-weight:600">NAISSANCE</div>
+        <div style="font-weight:700">${dob}</div>
+      </div>
+      <div style="background:#f7faff;border-radius:8px;padding:8px">
+        <div style="font-size:.64rem;color:var(--muted);font-weight:600">MOY. COMPO.1</div>
+        <div style="font-weight:700;color:${moy!==null?moy>=getMoySeuil(e.classe)?'var(--green)':'var(--red)':'var(--muted)'}">${moy!==null?moy.toFixed(2):'—'}</div>
+      </div>
+      <div style="background:#f7faff;border-radius:8px;padding:8px;grid-column:span 2">
+        <div style="font-size:.64rem;color:var(--muted);font-weight:600">PARENT / TUTEUR</div>
+        <div style="font-weight:700">${e.parent||'—'} — ${e.tel||''}</div>
+      </div>
+    </div>`;
+  openOv('ovEleve');
+}
+
+function getMoySeuil(classe) {
+  return ['CP1','CP2'].includes(classe) ? 5 : 5;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  FORMULAIRE
+// ═══════════════════════════════════════════════════════════
+function resetForm() {
+  ['fMat','fNom','fPrenom','fLieu','fParent','fTel','fDob'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fSexe').value   = 'M';
+  document.getElementById('fClasse').value = 'CP1';
+  document.getElementById('eid').value     = '';
+  document.getElementById('formTitle').textContent = 'Nouvel Élève';
+  document.getElementById('photoPreview').style.display = 'none';
+  document.getElementById('photoIcon').style.display    = 'block';
+  document.getElementById('photoPreview').src = '';
+  document.getElementById('fMat').value = new Date().getFullYear() + String(eleves.length+1).padStart(3,'0');
+}
+
+function loadIntoForm(e) {
+  document.getElementById('fMat').value    = e.id;
+  document.getElementById('fNom').value    = e.nom;
+  document.getElementById('fPrenom').value = e.prenom;
+  document.getElementById('fSexe').value   = e.sexe || 'M';
+  document.getElementById('fDob').value    = e.dob  || '';
+  document.getElementById('fLieu').value   = e.lieu || '';
+  document.getElementById('fClasse').value = e.classe;
+  document.getElementById('fParent').value = e.parent || '';
+  document.getElementById('fTel').value    = e.tel    || '';
+  document.getElementById('eid').value     = e.id;
+  document.getElementById('formTitle').textContent = '✏️ Modifier l\'élève';
+  if(e.photo) {
+    document.getElementById('photoPreview').src = e.photo;
+    document.getElementById('photoPreview').style.display = 'block';
+    document.getElementById('photoIcon').style.display    = 'none';
+  }
+}
+
+function saveEleve() {
+  const id     = document.getElementById('fMat').value.trim();
+  const nom    = document.getElementById('fNom').value.trim().toUpperCase();
+  const prenom = document.getElementById('fPrenom').value.trim();
+  if(!id || !nom || !prenom) { showToast('⚠️ Matricule, Nom et Prénoms obligatoires', '#c0392b'); return; }
+  const photo = document.getElementById('photoPreview').src || '';
+  const obj = {
+    id, nom, prenom,
+    sexe:   document.getElementById('fSexe').value,
+    dob:    document.getElementById('fDob').value,
+    lieu:   document.getElementById('fLieu').value.trim(),
+    classe: document.getElementById('fClasse').value,
+    parent: document.getElementById('fParent').value.trim(),
+    tel:    document.getElementById('fTel').value.trim(),
+    photo:  photo.startsWith('data:') ? photo : '',
+  };
+  const editId = document.getElementById('eid').value;
+  const idx    = eleves.findIndex(e => e.id === editId || e.id === id);
+  if(idx >= 0) eleves[idx] = obj; else eleves.push(obj);
+  saveData(); updateSelects();
+  showToast(`✅ ${prenom} ${nom} enregistré !`);
+  resetForm();
+  goPage('eleves', 0);
+}
+
+function editEleve() {
+  const e = eleves.find(x => x.id === eleveSelId);
+  if(!e) return;
+  loadIntoForm(e);
+  closeOv('ovEleve');
+  goPage('ajouter', 1);
+}
+
+function askDelete() {
+  const e = eleves.find(x => x.id === eleveSelId);
+  if(!e) return;
+  eleveDelId = eleveSelId;
+  document.getElementById('delMsg').textContent = `Supprimer ${e.prenom} ${e.nom} (${e.classe}) ? Action irréversible.`;
+  closeOv('ovEleve');
+  openOv('ovDel');
+}
+
+function confirmDelete() {
+  eleves = eleves.filter(e => e.id !== eleveDelId);
+  delete notes[eleveDelId];
+  saveData(); updateSelects();
+  closeOv('ovDel');
+  showToast('🗑️ Élève supprimé');
+  renderEleves();
+}
+
+function goNotes() {
+  document.getElementById('noteEl').value = eleveSelId;
+  closeOv('ovEleve');
+  goPage('notes', 2);
+  renderNotes();
+}
+
+function goBulletin() {
+  document.getElementById('bulEl').value = eleveSelId;
+  closeOv('ovEleve');
+  goPage('bulletin', 3);
+  renderBulletin();
+}
+
+// PHOTO
+function triggerPhoto() { document.getElementById('photoInput').click(); }
+function loadPhoto(evt) {
+  const file = evt.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const src = e.target.result;
+    document.getElementById('photoPreview').src          = src;
+    document.getElementById('photoPreview').style.display = 'block';
+    document.getElementById('photoIcon').style.display    = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  NOTES
+// ═══════════════════════════════════════════════════════════
+function setComp(n) {
+  compActif = n;
+  document.querySelectorAll('#compTabs .ctab').forEach((t,i) => t.className = 'ctab'+(i===n-1?' active':''));
+  renderNotes();
+}
+
+function getCfg(classe, comp) {
+  const c = CONFIGS[classe];
+  if(!c) return null;
+  return c['c'+comp] || null;
+}
+
+function isPassage(cfg) {
+  return cfg && cfg.isPassage === true;
+}
+
+function getAllMatieres(cfg) {
+  return cfg.groupes.flatMap(g => g.matieres);
+}
+
+function renderNotes() {
+  const id   = document.getElementById('noteEl').value;
+  const cont = document.getElementById('notesContent');
+  if(!id) {
+    cont.innerHTML = `<div class="empty"><div class="ei">📝</div><div class="et">Sélectionnez un élève</div><div class="ep">puis le numéro de composition</div></div>`;
+    return;
+  }
+  const e   = eleves.find(x => x.id === id);
+  if(!e) return;
+  const cfg = getCfg(e.classe, compActif);
+  if(!cfg) { cont.innerHTML = '<div class="empty"><div class="et">Configuration introuvable</div></div>'; return; }
+  const mats     = getAllMatieres(cfg);
+  const existing = (notes[id] || {})['c'+compActif] || [];
+
+  cont.innerHTML = `<div class="card">
+    <div class="ctitle">${e.nom} ${e.prenom} — ${cfg.label} (÷ ${cfg.diviseur})</div>
+    ${cfg.groupes.map(g => `
+      <div style="margin-bottom:12px">
+        <div style="font-size:.68rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;padding:4px 8px;background:var(--sky);border-radius:6px">${g.nom}</div>
+        ${g.matieres.map(m => {
+          const mi  = mats.indexOf(m);
+          const val = existing[mi] !== undefined ? existing[mi] : '';
+          return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:7px;padding:8px 10px;background:#f7faff;border-radius:9px">
+            <div style="flex:1;font-weight:600;font-size:.83rem">${m.nom} <span style="color:var(--muted);font-size:.7rem">/ ${m.max}</span></div>
+            <input type="number" min="0" max="${m.max}" step="0.5" id="nm_${mi}" value="${val}"
+              style="width:72px;padding:8px;border:1.5px solid var(--border);border-radius:8px;text-align:center;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;background:#fff"
+              oninput="calcTmpMoy('${e.classe}',${compActif})" placeholder="—">
+          </div>`;
+        }).join('')}
+      </div>
+    `).join('')}
+    <div id="moyTmp" style="background:var(--navy);color:#fff;border-radius:10px;padding:12px;text-align:center;margin-top:6px">
+      <div style="font-size:.66rem;opacity:.65">Moyenne calculée</div>
+      <div style="font-size:1.35rem;font-weight:700">—</div>
+    </div>
+    <button class="btn btn-green" onclick="saveNotes('${id}','${e.classe}')" style="margin-top:10px;margin-bottom:0">💾 Sauvegarder les notes</button>
+  </div>`;
+  calcTmpMoy(e.classe, compActif);
+}
+
+function calcTmpMoy(classe, comp) {
+  const cfg  = getCfg(classe, comp);
+  if(!cfg) return;
+  const mats = getAllMatieres(cfg);
+  let total  = 0;
+  mats.forEach((m, i) => {
+    const v = parseFloat(document.getElementById('nm_'+i)?.value);
+    if(!isNaN(v)) total += v;
+  });
+  const moy = total / cfg.diviseur;
+  const el  = document.getElementById('moyTmp');
+  if(el) {
+    const men = getMention(moy, classe);
+    el.innerHTML = `<div style="font-size:.66rem;opacity:.65">Moyenne calculée (Total: ${total.toFixed(1)} ÷ ${cfg.diviseur})</div>
+      <div style="font-size:1.35rem;font-weight:700">${moy.toFixed(2)}</div>
+      <span class="mention" style="background:${men.bg};color:${men.c};margin-top:4px">${men.txt}</span>`;
+  }
+}
+
+function saveNotes(id, classe) {
+  const cfg  = getCfg(classe, compActif);
+  if(!cfg) return;
+  const mats = getAllMatieres(cfg);
+  if(!notes[id]) notes[id] = {};
+  notes[id]['c'+compActif] = mats.map((m, i) => {
+    const v = parseFloat(document.getElementById('nm_'+i)?.value);
+    return isNaN(v) ? null : v;
+  });
+  saveData();
+  showToast('✅ Notes sauvegardées !');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  CALCUL MOYENNE
+// ═══════════════════════════════════════════════════════════
+function getMoyenne(id, cKey) {
+  const e   = eleves.find(x => x.id === id);
+  if(!e) return null;
+  const cfg = getCfg(e.classe, parseInt(cKey.replace('c','')));
+  if(!cfg) return null;
+  const ns  = (notes[id] || {})[cKey];
+  if(!ns || !ns.length) return null;
+  const total = ns.reduce((s, v) => s + (v || 0), 0);
+  return total / cfg.diviseur;
+}
+
+function getRang(id, cKey) {
+  const list = eleves
+    .map(e => ({ id: e.id, moy: getMoyenne(e.id, cKey) }))
+    .filter(x => x.moy !== null)
+    .sort((a, b) => b.moy - a.moy);
+  const i = list.findIndex(x => x.id === id);
+  return i >= 0 ? i + 1 : null;
+}
+
+function getMention(m, classe) {
+  const seuil = ['CE1','CE2','CM1','CM2'].includes(classe) ? 10 : 5;
+  if(m >= seuil * 1.6) return { txt:'Très Bien',  bg:'#d4edda', c:'#155724' };
+  if(m >= seuil * 1.4) return { txt:'Bien',        bg:'#d0e8fb', c:'#0c4a8a' };
+  if(m >= seuil * 1.2) return { txt:'Assez Bien',  bg:'#fff3cd', c:'#856404' };
+  if(m >= seuil)        return { txt:'Passable',    bg:'#ffe8cc', c:'#7a3b00' };
+  return                       { txt:'Insuffisant', bg:'#f8d7da', c:'#721c24' };
+}
+
+// ═══════════════════════════════════════════════════════════
+//  BULLETIN
+// ═══════════════════════════════════════════════════════════
+function setBulComp(n) {
+  bulCompActif = n;
+  document.querySelectorAll('#page-bulletin .comp-tabs .ctab').forEach((t,i) => t.className = 'ctab'+(i===n-1?' active':''));
+  renderBulletin();
+}
+
+function renderBulletin() {
+  const id   = document.getElementById('bulEl').value;
+  const cont = document.getElementById('bulContent');
+  if(!id) {
+    cont.innerHTML = `<div class="empty"><div class="ei">📋</div><div class="et">Choisissez un élève</div><div class="ep">Le bulletin s'affichera ici</div></div>`;
+    return;
+  }
+  const e    = eleves.find(x => x.id === id);
+  if(!e) return;
+  const cfg  = getCfg(e.classe, bulCompActif);
+  if(!cfg) return;
+  const cKey = 'c' + bulCompActif;
+  const mats = getAllMatieres(cfg);
+  const ns   = (notes[id] || {})[cKey] || [];
+  const total= ns.reduce((s, v) => s + (v || 0), 0);
+  const moy  = ns.length ? total / cfg.diviseur : null;
+  const rang = moy !== null ? getRang(id, cKey) : null;
+  const men  = moy !== null ? getMention(moy, e.classe) : null;
+  const dob  = e.dob ? new Date(e.dob).toLocaleDateString('fr-FR') : '—';
+  const hasPhoto = e.photo && e.photo.length > 0;
+  const maxTotal = mats.reduce((s, m) => s + m.max, 0);
+  const cfgPays    = config.pays    || "CÔTE D'IVOIRE";
+  const cfgInspect = config.inspect || "[INSPECTION DE L'ENSEIGNEMENT PRIMAIRE]";
+  const cfgEcole   = config.ecole   || "[NOM DE L'ÉCOLE]";
+  const cfgVille   = config.ville   || "";
+
+  // Nombre élèves de la même classe pour rang
+  const nbClasse = eleves.filter(x => x.classe === e.classe).length;
+
+  cont.innerHTML = `<div class="bul-wrap">
+    <!-- EN-TÊTE -->
+    <div class="bul-top">
+      <div class="pays">${cfgPays}</div>
+      <div style="font-size:.64rem;opacity:.6">Union — Discipline — Travail</div>
+      <div class="school">${cfgEcole}</div>
+      <div class="inspect">${cfgInspect}${cfgVille?' — '+cfgVille:''}</div>
+    </div>
+    <div class="bul-type">BULLETIN DE NOTES — ${cfg.label.toUpperCase()} — Année ${annee}</div>
+
+    <!-- INFOS ÉLÈVE -->
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border)">
+      <div class="av" style="width:52px;height:52px;background:${hasPhoto?'transparent':'#0f4c81'};flex-shrink:0;font-size:.85rem">
+        ${hasPhoto ? `<img src="${e.photo}" style="width:100%;height:100%;object-fit:cover">` : `${e.prenom[0]}${e.nom[0]}`}
+      </div>
+      <div>
+        <div style="font-weight:700;font-size:.92rem">${e.nom} ${e.prenom}</div>
+        <div style="font-size:.72rem;color:var(--muted)">${e.classe} &nbsp;·&nbsp; N° ${e.id} &nbsp;·&nbsp; ${dob}</div>
+        <div style="font-size:.7rem;color:var(--muted)">Tuteur : ${e.parent||'—'}</div>
+      </div>
+    </div>
+
+    <!-- TABLEAU DES NOTES -->
+    <table class="bul-table">
+      <thead><tr>
+        <th class="left">Matière</th>
+        <th>Barème</th>
+        <th>Note</th>
+        <th>Appréciation</th>
+      </tr></thead>
+      <tbody>
+        ${cfg.groupes.map(g => {
+          const rows = g.matieres.map(m => {
+            const mi  = mats.indexOf(m);
+            const n   = ns[mi];
+            const has = n !== null && n !== undefined;
+            const app = has ? getMention(n / m.max * (m.max <= 20 ? 10 : 10), e.classe) : null;
+            const nc  = has ? (n < m.max * 0.5 ? 'nl' : 'nh') : '';
+            return `<tr>
+              <td class="mname">${m.nom}</td>
+              <td>${m.max}</td>
+              <td class="${nc}">${has ? n : '—'}</td>
+              <td style="font-size:.66rem">${app ? app.txt : '—'}</td>
+            </tr>`;
+          }).join('');
+          return `<tr><td colspan="4" style="background:#e8f4fd;font-weight:700;font-size:.68rem;text-transform:uppercase;padding:5px 10px;color:var(--navy);letter-spacing:.5px">${g.nom}</td></tr>${rows}`;
+        }).join('')}
+        <tr style="background:#f0f5fb">
+          <td class="mname" style="font-weight:700">TOTAL</td>
+          <td style="font-weight:700">${maxTotal}</td>
+          <td style="font-weight:700;color:var(--navy)">${ns.length ? total.toFixed(1) : '—'}</td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- MOYENNE -->
+    <div class="bul-moy">
+      <div>
+        <div class="val">${moy !== null ? moy.toFixed(2) : '—'}</div>
+        <div class="lbl">Moyenne / ${cfg.diviseur}</div>
+      </div>
+      <div>
+        <div class="val">${rang ? rang+'e' : '—'}</div>
+        <div class="lbl">Rang / ${nbClasse}</div>
+      </div>
+      <div>
+        ${men ? `<span class="mention" style="background:${men.bg};color:${men.c}">${men.txt}</span>` : '<div class="val">—</div>'}
+        <div class="lbl" style="margin-top:4px">Mention</div>
+      </div>
+    </div>
+
+    <!-- SIGNATURES -->
+    <div class="bul-sign">
+      <div class="sign-box">
+        <div class="sign-lbl">Observations :</div>
+        <div style="border-bottom:1px solid var(--border);margin-bottom:6px"></div>
+        <div style="border-bottom:1px solid var(--border)"></div>
+      </div>
+      <div class="sign-box">
+        <div class="sign-lbl">Signature du Maître :</div>
+        <div style="height:28px"></div>
+        <div class="sign-lbl" style="margin-top:8px;margin-bottom:10px">Signature des Parents :</div>
+        <div style="height:20px"></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  STATS
+// ═══════════════════════════════════════════════════════════
+function renderStats() {
+  document.getElementById('stTotal').textContent = eleves.length;
+  document.getElementById('stGarc').textContent  = eleves.filter(e=>e.sexe==='M').length;
+  document.getElementById('stFill').textContent  = eleves.filter(e=>e.sexe==='F').length;
+  const moyennes = eleves
+    .map(e => ({ e, moy: getMoyenne(e.id, 'c1') }))
+    .filter(x => x.moy !== null)
+    .sort((a, b) => b.moy - a.moy);
+  if(moyennes.length) {
+    const g = moyennes.reduce((s,x)=>s+x.moy,0)/moyennes.length;
+    document.getElementById('stMoy').textContent = g.toFixed(2);
+  }
+  const medals = ['🥇','🥈','🥉'];
+  const cl = document.getElementById('classement');
+  if(!moyennes.length) {
+    cl.innerHTML = `<div class="empty" style="padding:20px"><div class="et">Aucune note saisie</div></div>`;
+    return;
+  }
+  cl.innerHTML = moyennes.map((x,i) => {
+    const gi  = eleves.indexOf(x.e);
+    const men = getMention(x.moy, x.e.classe);
+    return `<div class="ri">
+      <div class="rn" style="background:${i<3?['#f0a500','#94a3b8','#b45309'][i]:'var(--border)'};color:${i<3?'#fff':'var(--muted)'}">
+        ${i<3?medals[i]:i+1}
+      </div>
+      <div class="av" style="width:34px;height:34px;font-size:.76rem;background:${col(gi)};flex-shrink:0">
+        ${x.e.prenom[0]}${x.e.nom[0]}
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:.85rem">${x.e.nom} ${x.e.prenom}</div>
+        <div style="font-size:.68rem;color:var(--muted)">${x.e.classe}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-weight:700;color:var(--navy)">${x.moy.toFixed(2)}</div>
+        <span class="mention" style="font-size:.6rem;padding:2px 7px;background:${men.bg};color:${men.c}">${men.txt}</span>
+      </div>
+    </div>`;
+  }).join('');
+  // Load config
+  loadConfig();
+}
+
+function loadConfig() {
+  document.getElementById('setEcole').value   = config.ecole   || '';
+  document.getElementById('setInspect').value = config.inspect || '';
+  document.getElementById('setVille').value   = config.ville   || '';
+  document.getElementById('setPays').value    = config.pays    || "CÔTE D'IVOIRE";
+}
+
+function saveConfig() {
+  config.ecole   = document.getElementById('setEcole').value.trim();
+  config.inspect = document.getElementById('setInspect').value.trim();
+  config.ville   = document.getElementById('setVille').value.trim();
+  config.pays    = document.getElementById('setPays').value.trim() || "CÔTE D'IVOIRE";
+  saveData();
+  showToast('✅ Configuration sauvegardée !');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  ANNÉES
+// ═══════════════════════════════════════════════════════════
+function showYearModal() {
+  const annees = JSON.parse(localStorage.getItem('annees') || '["2022-2023","2023-2024","2024-2025","2025-2026"]');
+  document.getElementById('yearList').innerHTML = annees.map(a => `
+    <div onclick="setAnnee('${a}')" style="display:flex;align-items:center;justify-content:space-between;
+      padding:11px 12px;background:${a===annee?'var(--navy)':'#f7faff'};border-radius:10px;margin-bottom:7px;cursor:pointer">
+      <span style="font-weight:700;color:${a===annee?'#fff':'var(--text)'}">${a}</span>
+      ${a===annee?'<span style="color:var(--gold)">✓ Active</span>':''}
+    </div>`).join('');
+  openOv('ovYear');
+}
+
+function setAnnee(a) {
+  annee = a;
+  localStorage.setItem('annee', a);
+  loadData(); updateSelects();
+  document.getElementById('yearBadge').textContent = a;
+  closeOv('ovYear');
+  renderEleves();
+  showToast(`📅 Année ${a} activée`);
+}
+
+function newYear() {
+  const y = new Date().getFullYear();
+  const a = y + '-' + (y+1);
+  const list = JSON.parse(localStorage.getItem('annees') || '["2022-2023","2023-2024","2024-2025","2025-2026"]');
+  if(!list.includes(a)) { list.push(a); localStorage.setItem('annees', JSON.stringify(list)); }
+  setAnnee(a);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  DONNÉES
+// ═══════════════════════════════════════════════════════════
+function exportData() {
+  const d = { annee, eleves, notes, config, date: new Date().toISOString() };
+  const b = new Blob([JSON.stringify(d,null,2)], { type:'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(b);
+  a.download = `MonSouclou_${annee}_${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  showToast('✅ Données exportées !');
+}
+
+function importData(evt) {
+  const file = evt.target.files[0];
+  if(!file) return;
+  const r = new FileReader();
+  r.onload = e => {
+    try {
+      const d = JSON.parse(e.target.result);
+      if(d.eleves) eleves = d.eleves;
+      if(d.notes)  notes  = d.notes;
+      if(d.config) config = d.config;
+      saveData(); updateSelects();
+      showToast(`✅ ${eleves.length} élèves importés !`);
+      renderEleves();
+    } catch { showToast('⚠️ Fichier invalide','#c0392b'); }
+  };
+  r.readAsText(file);
+}
+
+function clearAll() {
+  if(!confirm(`Effacer TOUTES les données de ${annee} ?`)) return;
+  eleves = []; notes = {};
+  saveData(); updateSelects();
+  showToast('🗑️ Données effacées');
+  renderEleves();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  UTILITAIRES
+// ═══════════════════════════════════════════════════════════
+function updateSelects() {
+  const opts = '<option value="">-- Choisir un élève --</option>' +
+    eleves.map(e => `<option value="${e.id}">${e.nom} ${e.prenom} (${e.classe})</option>`).join('');
+  ['noteEl','bulEl'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) { const v = el.value; el.innerHTML = opts; if(v) el.value = v; }
+  });
+  document.getElementById('countBadge').textContent = eleves.length;
+  document.getElementById('hSub').textContent = `${eleves.length} élève${eleves.length>1?'s':''} — ${annee}`;
+}
+
+function openOv(id)  { document.getElementById(id).classList.add('open'); }
+function closeOv(id) { document.getElementById(id).classList.remove('open'); }
+
+function showToast(msg, bg = '#0f4c81') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.background = bg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════
+window.addEventListener('load', () => {
+  loadData();
+  updateSelects();
+  resetForm();
+  renderEleves();
+  renderClasFilter();
+  document.getElementById('yearBadge').textContent = annee;
+  setTimeout(() => document.getElementById('splash').classList.add('hide'), 2000);
+});
+
+document.querySelectorAll('.ov').forEach(ov => {
+  ov.addEventListener('click', e => { if(e.target === ov) ov.classList.remove('open'); });
+});
+
+if('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
