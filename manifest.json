@@ -1,9 +1,9 @@
 {
   "name": "Mon Souclou — Gestion Scolaire Primaire",
   "short_name": "Mon Souclou",
-  "description": "Application de gestion des élèves et bulletins pour l'école primaire. Du CP1 au CM2. Fonctionne sans internet.",
+  "description": "Application de gestion des élèves et bulletins pour l'école primaire (CP1 à CM2). Fonctionne entièrement hors ligne.",
   "start_url": "./index.html",
-  "id": "./index.html",
+  "id": "monsouclou",
   "display": "standalone",
   "background_color": "#0f4c81",
   "theme_color": "#0f4c81",
@@ -16,25 +16,13 @@
       "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     },
     {
       "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
   ]
 }
