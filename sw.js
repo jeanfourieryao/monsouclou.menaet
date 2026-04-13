@@ -1,19 +1,47 @@
-const CACHE = 'monsouclou-v1';
-const ASSETS = ['./', './index.html',
-  'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:ital,wght@0,700;0,900;1,700&display=swap'];
+// Ceci est le service worker « Page hors ligne ».
 
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS).catch(()=>{})));
-  self.skipWaiting();
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
+
+const CACHE = "pwabuilder-page";
+
+// TODO : remplacer ce qui suit par la page de repli hors ligne correcte, par exemple : const offlineFallbackPage = "offline.html" ;
+const offlineFallbackPage = "ToDo-remplacer-ce-nom.html";
+
+self.addEventListener("message", (event) => {
+  si (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
 });
-self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));
-});
-self.addEventListener('fetch', e => {
-  e.respondWith(
-    caches.match(e.request).then(cached => cached || fetch(e.request)
-      .then(resp => { const c = resp.clone(); caches.open(CACHE).then(ca=>ca.put(e.request,c)); return resp; })
-      .catch(() => caches.match('./index.html'))
-    )
+
+self.addEventListener('install', async (event) => {
+  événement.attendre jusqu'à(
+    caches.open(CACHE)
+      .then((cache) => cache.add(offlineFallbackPage))
   );
+});
+
+si (workbox.navigationPreload.isSupported()) {
+  workbox.navigationPreload.enable();
+}
+
+self.addEventListener('fetch', (event) => {
+  si (event.request.mode === 'navigate') {
+    événement.répondreAvec((async () => {
+      essayer {
+        const preloadResp = await event.preloadResponse;
+
+        si (preloadResp) {
+          renvoyer preloadResp;
+        }
+
+        const networkResp = await fetch(event.request);
+        renvoyer networkResp;
+      } attraper (erreur) {
+
+        const cache = await caches.open(CACHE);
+        const cachedResp = await cache.match(offlineFallbackPage);
+        renvoyer cachedResp;
+      }
+    })();
+  }
 });
