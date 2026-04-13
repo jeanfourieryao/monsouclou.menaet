@@ -5,14 +5,61 @@
   "start_url": "./index.html",
   "id": "./index.html",
   "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
   "background_color": "#0f4c81",
   "theme_color": "#0f4c81",
   "orientation": "portrait-primary",
   "lang": "fr",
+  "dir": "ltr",
   "scope": "./",
   "categories": [
     "education",
     "productivity"
+  ],
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Ajouter un élève",
+      "short_name": "Ajouter",
+      "description": "Enregistrer un nouvel élève",
+      "url": "./index.html#ajouter",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Saisir les notes",
+      "short_name": "Notes",
+      "description": "Saisir les notes d'un élève",
+      "url": "./index.html#notes",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Générer un bulletin",
+      "short_name": "Bulletin",
+      "description": "Afficher et imprimer un bulletin",
+      "url": "./index.html#bulletin",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
   ],
   "icons": [
     {
@@ -53,21 +100,28 @@
       "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Liste des élèves avec photos"
+      "label": "Liste des élèves par niveau"
     },
     {
       "src": "screenshot-3-modifier.png",
       "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Fiche de l'élève"
+      "label": "Fiche et modification de l'élève"
     },
     {
       "src": "screenshot-4-stats.png",
       "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Statistiques et classement"
+      "label": "Statistiques et classement par niveau"
+    },
+    {
+      "src": "screenshot-4-stats.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Mon Souclou sur desktop — Statistiques"
     }
   ]
 }
