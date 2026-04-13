@@ -1,7 +1,8 @@
+// ==================== PROGRESSIER INTEGRATION ====================
+importScripts("https://progressier.app/OCN4jyqSJkGtEBiEWzRg/sw.js");
+// ================================================================
+
 // Ceci est le service worker « Page hors ligne ».
-
-importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
-
 const CACHE = "pwabuilder-page";
 
 // TODO : remplacer ce qui suit par la page de repli hors ligne correcte, par exemple : const offlineFallbackPage = "offline.html" ;
