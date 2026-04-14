@@ -1599,4 +1599,14 @@ window.addEventListener('load', () => {
   setTimeout(() => document.getElementById('splash').classList.add('hide'), 2000);
 });
 
-document.querySe
+document.querySelectorAll('.ov').forEach(ov => {
+  ov.addEventListener('click', e => { if(e.target === ov) ov.classList.remove('open'); });
+});
+
+if('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
+
