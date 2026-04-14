@@ -234,6 +234,36 @@ header { background:linear-gradient(135deg,var(--navy),#1a5c9a); color:#fff;
   .bul-sign { page-break-inside:avoid; }
 }
 @media(max-width:360px) { .frow,.f3,.g2,.g3,.g4 { grid-template-columns:1fr; } }
+
+/* BOUTONS */
+.btn {
+  display:block; width:100%; padding:13px 16px; border:none; border-radius:12px;
+  font-family:'DM Sans',sans-serif; font-size:.92rem; font-weight:700;
+  cursor:pointer; text-align:center; margin-bottom:9px;
+  transition:all .15s; -webkit-tap-highlight-color:transparent;
+  box-shadow:0 2px 8px rgba(0,0,0,.12); letter-spacing:.2px;
+}
+.btn:active { transform:scale(.97); box-shadow:0 1px 4px rgba(0,0,0,.10); }
+
+.btn-navy  { background:var(--navy);   color:#fff; }
+.btn-blue  { background:var(--blue);   color:#fff; }
+.btn-green { background:var(--green);  color:#fff; }
+.btn-red   { background:var(--red);    color:#fff; }
+.btn-orange{ background:var(--orange); color:#fff; }
+.btn-gold  { background:var(--gold);   color:#fff; }
+.btn-ghost {
+  background:#fff; color:var(--navy);
+  border:1.5px solid var(--border); box-shadow:none;
+}
+.btn-ghost:active { background:var(--sky); }
+
+/* Petite variante (dans les modales) */
+.btn-sm { padding:10px 14px; font-size:.82rem; border-radius:10px; margin-bottom:7px; }
+
+/* Grille 2 colonnes pour les boutons côte à côte */
+.g2 { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+.g3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+.g4 { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:7px; }
 </style>
 </head>
 <body>
