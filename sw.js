@@ -1,7 +1,3 @@
-// ==================== PROGRESSIER INTEGRATION ====================
-importScripts("https://progressier.app/OCN4jyqSJkGtEBiEWzRg/sw.js");
-// ================================================================
-
 // Ceci est le service worker « Page hors ligne ».
 const CACHE = "pwabuilder-page";
 
@@ -13,8 +9,6 @@ self.addEventListener("message", (event) => {
     self.skipWaiting();
   }
 });
-importScripts("https://progressier.app/OCN4jyqSJkGtEBiEWzRg/sw.js" );
-
 self.addEventListener('install', async (event) => {
   événement.attendre jusqu'à(
     caches.open(CACHE)
